@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="9.3">
+<file name="/Users/zoegong/NEU/CS7580/implement-semver-2-0-library-zoegongyinlu/src/main/java/com/neu/semver/SemVerParser.java">
+</file>
+<file name="/Users/zoegong/NEU/CS7580/implement-semver-2-0-library-zoegongyinlu/src/main/java/com/neu/semver/SemVer.java">
+</file>
+<file name="/Users/zoegong/NEU/CS7580/implement-semver-2-0-library-zoegongyinlu/src/main/java/com/neu/semver/SemVerComparator.java">
+</file>
+<file name="/Users/zoegong/NEU/CS7580/implement-semver-2-0-library-zoegongyinlu/src/main/java/com/neu/semver/SemVerUtils.java">
+</file>
+<file name="/Users/zoegong/NEU/CS7580/implement-semver-2-0-library-zoegongyinlu/src/main/java/com/neu/semver/package-info.java">
+</file>
+<file name="/Users/zoegong/NEU/CS7580/implement-semver-2-0-library-zoegongyinlu/src/main/java/com/neu/semver/InvalidSemVerException.java">
+</file>
+</checkstyle>

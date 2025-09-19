@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SemVer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SemVer Java Library</a> &gt; <a href="index.source.html" class="el_package">com.neu.semver</a> &gt; <span class="el_source">SemVer.java</span></div><h1>SemVer.java</h1><pre class="source lang-java linenums">package com.neu.semver;
+
+import java.util.Objects;
+
+/**
+ * A Java implementation of SemVer 2.0.
+ * Semantic versioning uses the format: MAJOR.MINOR.PATCH[-PRERELEASE][+BUILD]
+ *
+ * @author Yinlu Gong
+ * @version 0.1.0
+ */
+public final class SemVer implements Comparable&lt;SemVer&gt; {
+
+
+
+    /** The major version number. */
+    private final int major;
+    /** The minor version number. */
+    private final int minor;
+    /** The patch version number. */
+    private final int patch;
+    /** The prerelease identifier, or null if not present. */
+    private final String prerelease;
+    /** The build metadata, or null if not present. */
+    private final String build;
+    /** The original version string used to construct this SemVer object. */
+    private final String originalVersion;
+
+    /**
+     * Internal constructor used by {@link SemVerParser} to create
+     * a SemVer object directly from parsed fields.
+     *
+     * Package-private access modifier is intentional for internal use only.
+     * This constructor is not part of the public API and should only be
+     * used by classes within the same package.
+     *
+     * @param majorVersion the major version number
+     * @param minorVersion the minor version number
+     * @param patchVersion the patch version number
+     * @param prereleaseVersion the prerelease identifier,
+     *                          or null if not present
+     * @param buildMetadata the build metadata,
+     *                     or null if not present
+     * @param originalString the original version string
+     */
+    SemVer(
+        final int majorVersion,
+        final int minorVersion,
+        final int patchVersion,
+        final String prereleaseVersion,
+        final String buildMetadata,
+        final String originalString
+<span class="fc" id="L53">    ) {</span>
+<span class="fc" id="L54">        this.major = majorVersion;</span>
+<span class="fc" id="L55">        this.minor = minorVersion;</span>
+<span class="fc" id="L56">        this.patch = patchVersion;</span>
+<span class="fc" id="L57">        this.prerelease = prereleaseVersion;</span>
+<span class="fc" id="L58">        this.build = buildMetadata;</span>
+<span class="fc" id="L59">        this.originalVersion = originalString;</span>
+<span class="fc" id="L60">    }</span>
+
+    /**
+     * Constructs a SemVer object from a version string.
+     *
+     * @param version the semantic version string to parse
+     * @throws InvalidSemVerException if the version string is invalid
+     * @throws IllegalArgumentException if the version string is null
+     */
+<span class="fc" id="L69">    public SemVer(final String version) {</span>
+<span class="fc" id="L70">        final SemVer parsed = SemVerParser.parse(version);</span>
+<span class="fc" id="L71">        this.major = parsed.major;</span>
+<span class="fc" id="L72">        this.minor = parsed.minor;</span>
+<span class="fc" id="L73">        this.patch = parsed.patch;</span>
+<span class="fc" id="L74">        this.prerelease = parsed.prerelease;</span>
+<span class="fc" id="L75">        this.build = parsed.build;</span>
+<span class="fc" id="L76">        this.originalVersion = parsed.originalVersion;</span>
+<span class="fc" id="L77">    }</span>
+
+    /**
+     * Returns the major version number.
+     * @return the major version number
+     */
+    public int getMajor() {
+<span class="fc" id="L84">        return major;</span>
+    }
+
+    /** Return the minor version number.
+     * @return the minor version number
+     */
+    public int getMinor() {
+<span class="fc" id="L91">        return minor;</span>
+    }
+
+    /**
+     * Returns the patch version number.
+     *
+     * @return the patch version number
+     */
+    public int getPatch() {
+<span class="fc" id="L100">        return patch;</span>
+    }
+
+    /** Return the prerelease identifier, or null if not present.
+     * @return the prerelease identifier, or null if not present
+     */
+    public String getPrerelease() {
+<span class="fc" id="L107">        return prerelease;</span>
+    }
+
+    /** Return the build metadata, or null if not present.
+     * @return the build metadata, or null if not present
+     */
+    public String getBuild() {
+<span class="fc" id="L114">        return build;</span>
+    }
+
+    /** Return the original version string.
+     * @return the original version string
+     */
+    public String getOriginalVersion() {
+<span class="fc" id="L121">        return originalVersion;</span>
+    }
+
+    /**
+     * Boolean checks if the version is prerelease version.
+     *
+     * @return true if it is prerelease version
+     */
+    public boolean isPrerelease() {
+<span class="pc bpc" id="L130" title="1 of 4 branches missed.">        return prerelease != null &amp;&amp; !prerelease.isEmpty();</span>
+    }
+
+    /**
+     * Returns true if this version has build metadata.
+     *
+     * @return true if this version has build metadata
+     */
+    public boolean hasBuild() {
+<span class="pc bpc" id="L139" title="1 of 4 branches missed.">        return build != null &amp;&amp; !build.isEmpty();</span>
+    }
+
+
+    /**
+     * Compares this SemVer object with another according to SemVer 2.0.0
+     * precedence rules. Build metadata is ignored in precedence calculations.
+     *
+     * @param other the SemVer object to compare with
+     * @return a negative integer, zero, or a positive integer as this object is
+     *         less than, equal to, or greater than the specified object
+     * @throws IllegalArgumentException if other semVer is empty or null
+     */
+    @Override
+    public int compareTo(final SemVer other) {
+<span class="fc bfc" id="L154" title="All 2 branches covered.">        if (other == null) {</span>
+<span class="fc" id="L155">            throw new IllegalArgumentException(&quot;Cannot compare with null&quot;);</span>
+        }
+<span class="fc" id="L157">        return SemVerComparator.compareVersions(this, other);</span>
+    }
+
+    /**
+     * Returns a string representation of this SemVer object.
+     *
+     * @return the string representation
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L167">        return originalVersion;</span>
+    }
+
+    /**
+     * Indicates whether some other object is equal to this SemVer object.
+     * Two SemVer objects are equal if they have the same major, minor, patch,
+     * and prerelease values. Build metadata is ignored in equality comparison
+     *
+     * @param obj the object to compare with
+     * @return true if the objects are equal
+     */
+    @Override
+    public boolean equals(final Object obj) {
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        boolean result = this == obj;</span>
+<span class="fc bfc" id="L181" title="All 6 branches covered.">        if (!result &amp;&amp; obj != null &amp;&amp; getClass() == obj.getClass()) {</span>
+<span class="fc" id="L182">            final SemVer semVer = (SemVer) obj;</span>
+<span class="fc bfc" id="L183" title="All 6 branches covered.">            result = major == semVer.major</span>
+                    &amp;&amp; minor == semVer.minor
+                    &amp;&amp; patch == semVer.patch
+<span class="fc bfc" id="L186" title="All 2 branches covered.">                    &amp;&amp; Objects.equals(prerelease, semVer.prerelease);</span>
+        }
+<span class="fc" id="L188">        return result;</span>
+    }
+
+    /**
+     * Returns a hash code for this SemVer object.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+<span class="fc" id="L198">        return Objects.hash(major, minor, patch, prerelease);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

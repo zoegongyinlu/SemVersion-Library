@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SemVerParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SemVer Java Library</a> &gt; <a href="index.source.html" class="el_package">com.neu.semver</a> &gt; <span class="el_source">SemVerParser.java</span></div><h1>SemVerParser.java</h1><pre class="source lang-java linenums">package com.neu.semver;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Parser for semantic version strings compliant with SemVer 2.0.0.
+ * with regex
+* @author Yinlu Gong
+ * @version 0.1.0
+ */
+public final class SemVerParser {
+
+    /**
+     * Regular expression pattern for SemVer 2.0.0 strings.
+     * Matches MAJOR.MINOR.PATCH[-PRERELEASE][+BUILD].
+     */
+<span class="fc" id="L18">    private static final Pattern SEMVER_PATTERN = Pattern.compile(</span>
+        &quot;^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)&quot;
+        + &quot;(?:-((?:0|[1-9]\\d*|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]|[a-zA-Z])&quot;
+        + &quot;(?:\\.(?:0|[1-9]\\d*|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]|[a-zA-Z]))*))?&quot;
+        + &quot;(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$&quot;
+    );
+
+    // Group indices for SEMVER_PATTERN matcher
+    /** Group index for the major version. */
+    private static final int GROUP_MAJOR = 1;
+    /** Group index for the minor version. */
+    private static final int GROUP_MINOR = 2;
+    /** Group index for the patch version. */
+    private static final int GROUP_PATCH = 3;
+    /** Group index for the prerelease identifier. */
+    private static final int GROUP_PRERELEASE = 4;
+    /** Group index for the build metadata. */
+    private static final int GROUP_BUILD = 5;
+    /**
+     * Private constructor to prevent instantiation.
+     */
+    private SemVerParser() {
+        // Utility class (cannot be instantiated)
+    }
+    /**
+     * Parses a version string into a {@link SemVer} instance.
+     *
+     * @param version the version string
+     * @return a instance representing the parsed version
+     * @throws IllegalArgumentException if {@code version} is null
+     * @throws InvalidSemVerException if the version is empty or invalid
+     */
+    public static SemVer parse(final String version) {
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        if (version == null) {</span>
+<span class="fc" id="L52">            throw new IllegalArgumentException(</span>
+                &quot;Version string cannot be null&quot;
+                );
+        }
+<span class="fc" id="L56">        final String trimmed = version.trim();</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (trimmed.isEmpty()) {</span>
+<span class="fc" id="L58">            throw new InvalidSemVerException(</span>
+                &quot;Version string cannot be empty&quot;
+                );
+        }
+<span class="fc" id="L62">        final Matcher matcher = SEMVER_PATTERN.matcher(trimmed);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (!matcher.matches()) {</span>
+<span class="fc" id="L64">            throw new InvalidSemVerException(</span>
+                &quot;Invalid semantic version: &quot;
+                + trimmed);
+        }
+        // Extract all group values to avoid Law of Demeter violations
+<span class="fc" id="L69">        final String majorStr = matcher.group(GROUP_MAJOR);</span>
+<span class="fc" id="L70">        final String minorStr = matcher.group(GROUP_MINOR);</span>
+<span class="fc" id="L71">        final String patchStr = matcher.group(GROUP_PATCH);</span>
+<span class="fc" id="L72">        final String prereleaseStr = matcher.group(GROUP_PRERELEASE);</span>
+<span class="fc" id="L73">        final String buildStr = matcher.group(GROUP_BUILD);</span>
+<span class="fc" id="L74">        return new SemVer(</span>
+<span class="fc" id="L75">            Integer.parseInt(majorStr),</span>
+<span class="fc" id="L76">            Integer.parseInt(minorStr),</span>
+<span class="fc" id="L77">            Integer.parseInt(patchStr),</span>
+            prereleaseStr,
+            buildStr,
+            trimmed
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

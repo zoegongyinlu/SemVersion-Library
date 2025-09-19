@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SemVerUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SemVer Java Library</a> &gt; <a href="index.source.html" class="el_package">com.neu.semver</a> &gt; <span class="el_source">SemVerUtils.java</span></div><h1>SemVerUtils.java</h1><pre class="source lang-java linenums">package com.neu.semver;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+/**
+ * Utility class for SemVer operations.
+ * Contains static utility methods for version manipulation and sorting.
+ *
+ * @author Yinlu Gong
+ * @version 0.1.0
+ */
+public final class SemVerUtils {
+    /**
+     * Private constructor to prevent instantiation of utility class.
+     */
+    private SemVerUtils() {
+    }
+
+    /**
+     * Sorts a list of version strings in descending order (newest to oldest).
+     *
+     * @param versions the list of version strings to sort
+     * @return a new list containing the versions sorted in descending order
+     * @throws InvalidSemVerException if any version string is invalid
+     * @throws IllegalArgumentException if versions is null or contains null
+     *         elements
+     */
+    public static List&lt;String&gt; sortVersions(final List&lt;String&gt; versions) {
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        if (versions == null) {</span>
+<span class="fc" id="L31">            throw new IllegalArgumentException(</span>
+                &quot;Versions list cannot be null&quot;
+            );
+        }
+
+        // Validate all versions first and collect SemVer objects
+<span class="fc" id="L37">        final List&lt;SemVer&gt; semVerObjects = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        for (final String version : versions) {</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            if (version == null) {</span>
+<span class="fc" id="L40">                throw new IllegalArgumentException(</span>
+                    &quot;Version string cannot be null&quot;
+                );
+            }
+<span class="fc" id="L44">            semVerObjects.add(SemVerParser.parse(version));</span>
+<span class="fc" id="L45">        }</span>
+<span class="fc" id="L46">        semVerObjects.sort(Collections.reverseOrder());</span>
+<span class="fc" id="L47">        final List&lt;String&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (final SemVer semVer : semVerObjects) {</span>
+<span class="fc" id="L49">            result.add(semVer.getOriginalVersion());</span>
+<span class="fc" id="L50">        }</span>
+<span class="fc" id="L51">        return result;</span>
+
+    }
+    /**
+     * Finds the highest version from a list of version strings.
+     *
+     * @param versions the list of version strings to compare
+     * @return the highest version string
+     * @throws InvalidSemVerException if any version string is invalid
+     * @throws IllegalArgumentException if versions is null,
+     * empty, or contains null elements
+     */
+    public static String findHighestVersion(final List&lt;String&gt; versions) {
+<span class="fc bfc" id="L64" title="All 4 branches covered.">        if (versions == null || versions.isEmpty()) {</span>
+<span class="fc" id="L65">            throw new IllegalArgumentException(</span>
+                &quot;Versions list cannot be null or empty&quot;
+            );
+        }
+<span class="fc" id="L69">        final List&lt;String&gt; sortedVersions = sortVersions(versions);</span>
+        // First element is the highest due to descending sort
+<span class="fc" id="L71">        final String highestVersion = sortedVersions.get(0);</span>
+<span class="fc" id="L72">        return highestVersion;</span>
+    }
+    /**
+     * Checks if a version string is valid according
+     * to SemVer 2.0.0 specification.
+     *
+     * @param version the version string to validate
+     * @return true if the version is valid, false otherwise
+     */
+    public static boolean isValidVersion(final String version) {
+        boolean isValid;
+        try {
+<span class="fc" id="L84">            SemVerParser.parse(version);</span>
+<span class="fc" id="L85">            isValid = true;</span>
+<span class="fc" id="L86">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L87">            isValid = false;</span>
+<span class="fc" id="L88">        }</span>
+<span class="fc" id="L89">        return isValid;</span>
+    }
+    /**
+     * Increments the major version and resets minor and patch to 0.
+     *
+     * @param semVer the SemVer object to increment
+     * @return a new SemVer object with incremented major version
+     */
+    public static SemVer nextMajor(final SemVer semVer) {
+<span class="fc" id="L98">        return new SemVer((semVer.getMajor() + 1) + &quot;.0.0&quot;);</span>
+    }
+
+    /**
+     * Increments the minor version and resets patch to 0.
+     * @param semVer the SemVersion object
+     * @return a new SemVer object with incremented minor version
+     */
+    public static SemVer nextMinor(final SemVer semVer) {
+<span class="fc" id="L107">        return new SemVer(</span>
+<span class="fc" id="L108">            semVer.getMajor()</span>
+                + &quot;.&quot;
+                +
+<span class="fc" id="L111">                (semVer.getMinor() + 1)</span>
+                + &quot;.0&quot;
+        );
+    }
+
+    /**
+     * Increments the patch version.
+     * @param version the SemVersion object
+     * @return a new SemVer object with incremented patch version
+     */
+    public static SemVer nextPatch(final SemVer version) {
+<span class="fc" id="L122">        return new SemVer(</span>
+<span class="fc" id="L123">            version.getMajor()</span>
+<span class="fc" id="L124">                + &quot;.&quot; + version.getMinor()</span>
+<span class="fc" id="L125">                + &quot;.&quot; + (version.getPatch() + 1)</span>
+        );
+    }
+
+
+    /**
+     * Sets the major version to the specified value and resets minor and
+     * patch to 0.
+     * @param version the SemVersion object
+     * @param newMajor the new major version number
+     * @return a new SemVer object with the specified major version
+     * @throws IllegalArgumentException if newMajor is negative
+     */
+    public static SemVer withMajor(final SemVer version, final int newMajor) {
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        if (newMajor &lt; 0) {</span>
+<span class="fc" id="L140">            throw new IllegalArgumentException(</span>
+                &quot;Major version cannot be negative: &quot;
+                    + newMajor
+            );
+        }
+<span class="fc" id="L145">        return new SemVer(</span>
+            newMajor
+                + &quot;.0.0&quot;
+        );
+    }
+
+    /**
+     * Sets the minor version to the specified value and resets patch to 0.
+     *
+     * @param version the SemVersion object
+     * @param newMinor the new minor version number
+     * @return a new SemVer object with the specified minor version
+     * @throws IllegalArgumentException if newMinor is negative
+     */
+    public static SemVer withMinor(final SemVer version, final int newMinor) {
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        if (newMinor &lt; 0) {</span>
+<span class="fc" id="L161">            throw new IllegalArgumentException(</span>
+                &quot;Minor version cannot be negative: &quot;
+                    + newMinor
+            );
+        }
+<span class="fc" id="L166">        return new SemVer(</span>
+<span class="fc" id="L167">            version.getMajor() + &quot;.&quot;</span>
+                + newMinor + &quot;.0&quot;
+        );
+    }
+
+    /**
+     * Sets the patch version to the specified value.
+     *@param version the SemVersion object
+     * @param newPatch the new patch version number
+     * @return a new SemVer object with the specified patch version
+     * @throws IllegalArgumentException if newPatch is negative
+     */
+    public static SemVer withPatch(final SemVer version, final int newPatch) {
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        if (newPatch &lt; 0) {</span>
+<span class="fc" id="L181">            throw new IllegalArgumentException(</span>
+                &quot;Patch version cannot be negative: &quot;
+                    + newPatch
+            );
+        }
+<span class="fc" id="L186">        return new SemVer(</span>
+<span class="fc" id="L187">            version.getMajor()</span>
+<span class="fc" id="L188">                + &quot;.&quot; + version.getMinor()</span>
+                + &quot;.&quot; + newPatch
+        );
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
